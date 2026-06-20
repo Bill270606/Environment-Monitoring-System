@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Dashboard — EnvMonitor</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<link rel="stylesheet" href="/static/dashboard.css?v=5"/>
+</head>
+<body class="is-loading">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon">◈</div>
+    <span>ENV<span class="acc">MONITOR</span></span>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-group-label">MAIN</div>
+    <a href="/dashboard" class="nav-item active"><span class="ni">🏠</span> Overview</a>
+    <a href="/sensors" class="nav-item"><span class="ni">📡</span> Sensors</a>
+    <a href="/alerts" class="nav-item"><span class="ni">⚠️</span> Alerts <span class="badge-n" id="alert-count">0</span></a>
+    <div class="nav-group-label" style="margin-top:20px">REPORTS</div>
+    <a href="/charts" class="nav-item"><span class="ni">📊</span> Charts</a>
+    <a href="#" class="nav-item disabled"><span class="ni">📋</span> Logs <span class="soon-badge">Soon</span></a>
+    <div class="nav-group-label" style="margin-top:20px">SYSTEM</div>
+    <a href="/settings" class="nav-item"><span class="ni">⚙️</span> Settings</a>
+    <a href="#" class="nav-item disabled"><span class="ni">❓</span> Help <span class="soon-badge">Soon</span></a>
+  </nav>
+  <div class="sb-user" id="sb-user">
+    <div class="sb-avatar" id="sb-avatar">U</div>
+    <div class="sb-info">
+      <div class="sb-name" id="sb-name">User</div>
+      <div class="sb-role">Admin</div>
+    </div>
+    <button class="sb-logout" onclick="logout()" title="Logout">⏏</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main" id="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-l">
+      <button class="hamburger" onclick="toggleSidebar()" id="hamburger">☰</button>
+      <div>
+        <h1 class="page-title">Overview</h1>
+        <p class="page-sub">Sensor Node 01 — <span id="date-display">--/--/----</span></p>
+      </div>
+    </div>
+    <div class="topbar-r">
+      <div class="conn-status" id="conn-status"><span class="conn-dot"></span>Connecting...</div>
+      <div class="time-display" id="time-display">--:--:--</div>
+      <button class="theme-toggle" id="theme-toggle" title="Toggle Dark / Light mode (D)">🌙</button>
+      <button class="cmdk-trigger" id="cmdk-trigger" title="Open command palette">⌘ <kbd>Ctrl K</kbd></button>
+      <button class="notif-btn" id="notif-btn">
+        🔔
+        <span class="notif-badge" id="notif-badge" style="display:none">0</span>
+      </button>
+      <div class="user-chip" id="user-chip">
+        <div class="chip-avatar" id="chip-avatar">U</div>
+        <span id="chip-name">User</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- Connection error state -->
+    <div class="content-error" id="content-error">
+      <div class="ce-icon">📡</div>
+      <h3 class="ce-title">Connection lost</h3>
+      <p class="ce-desc">We can't reach the sensor server right now. Your data may be out of date.</p>
+      <button class="ce-retry" id="ce-retry">🔄 Retry</button>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="sc-icon" style="background:#6366f120;color:#818cf8">📈</div>
+        <div class="sc-info"><div class="sc-val" id="sc-readings">0</div><div class="sc-label">Total Readings</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-icon" style="background:#ff2d5518;color:#ff7090">⚠️</div>
+        <div class="sc-info"><div class="sc-val" id="sc-alerts">0</div><div class="sc-label">Active Alerts</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-icon" style="background:#00ff4415;color:#00ff44">✅</div>
+        <div class="sc-info"><div class="sc-val" id="sc-status">Online</div><div class="sc-label">System Status</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-icon" style="background:#00d4ff15;color:#00d4ff">⏱️</div>
+        <div class="sc-info"><div class="sc-val" id="sc-uptime">00:00:00</div><div class="sc-label">Uptime</div></div>
+      </div>
+    </div>
+
+    <!-- GAUGES -->
+    <div class="section-header">
+      <h2 class="section-title">Real-time Metrics</h2>
+      <div class="header-actions">
+        <div class="view-toggle" id="view-toggle">
+          <button class="vt-btn" data-view="grid" title="Grid view">⊞</button>
+          <button class="vt-btn" data-view="list" title="List view">☰</button>
+        </div>
+        <div class="update-tag"><span class="u-dot"></span>Auto-updates every 2s</div>
+      </div>
+    </div>
+
+    <div class="gauges-grid" id="grid-view">
+      <div class="gauge-card" id="card-temp" onclick="openFocus('temp')">
+        <div class="gc-header"><span class="gc-icon">🌡️</span><div><div class="gc-name">Temperature</div><div class="gc-unit">°C</div></div><div class="gc-badge" id="b-temp">—</div></div>
+        <svg viewBox="0 0 120 110" class="gsv"><path d="M 24.6 95.4 A 50 50 0 1 1 95.4 95.4" fill="none" style="stroke:var(--track)" stroke-width="10" stroke-linecap="round"/><path id="g-temp" d="M 24.6 95.4 A 50 50 0 1 1 95.4 95.4" fill="none" stroke="#ff6b35" stroke-width="10" stroke-linecap="round" stroke-dasharray="235.6" stroke-dashoffset="235.6"/><text id="v-temp" x="60" y="64" text-anchor="middle" class="gv">--</text><text x="60" y="80" text-anchor="middle" class="gu">°C</text></svg>
+        <div class="gc-range">0°C <span style="color:#374151">—</span> 50°C</div>
+        <div class="skeleton-overlay"></div>
+      </div>
+
+      <div class="gauge-card" id="card-hum" onclick="openFocus('hum')">
+        <div class="gc-header"><span class="gc-icon">💧</span><div><div class="gc-name">Humidity</div><div class="gc-unit">%</div></div><div class="gc-badge" id="b-hum">—</div></div>
+        <svg viewBox="0 0 120 110" class="gsv"><path d="M 24.6 95.4 A 50 50 0 1 1 95.4 95.4" fill="none" style="stroke:var(--track)" stroke-width="10" stroke-linecap="round"/><path id="g-hum" d="M 24.6 95.4 A 50 50 0 1 1 95.4 95.4" fill="none" stroke="#00b4d8" stroke-width="10" stroke-linecap="round" stroke-dasharray="235.6" stroke-dashoffset="235.6"/><text id="v-hum" x="60" y="64" text-anchor="middle" class="gv">--</text><text x="60" y="80" text-anchor="middle" class="gu">%</text></svg>
+        <div class="gc-range">0% <span style="color:#374151">—</span> 100%</div>
+        <div class="skeleton-overlay"></div>
+      </div>
+
+      <div class="gauge-card" id="card-lux" onclick="openFocus('lux')">
+        <div class="gc-header"><span class="gc-icon">☀️</span><div><div class="gc-name">Light</div><div class="gc-unit">lux</div></div><div class="gc-badge" id="b-lux">—</div></div>
+        <svg viewBox="0 0 120 110" class="gsv"><path d="M 24.6 95.4 A 50 50 0 1 1 95.4 95.4" fill="none" style="stroke:var(--track)" stroke-width="10" stroke-linecap="round"/><path id="g-lux" d="M 24.6 95.4 A 50 50 0 1 1 95.4 95.4" fill="none" stroke="#ffd60a" stroke-width="10" stroke-linecap="round" stroke-dasharray="235.6" stroke-dashoffset="235.6"/><text id="v-lux" x="60" y="64" text-anchor="middle" class="gv">--</text><text x="60" y="80" text-anchor="middle" class="gu">lux</text></svg>
+        <div class="gc-range">0 <span style="color:#374151">—</span> 1000 lux</div>
+        <div class="skeleton-overlay"></div>
+      </div>
+
+      <div class="gauge-card" id="card-uv" onclick="openFocus('uv')">
+        <div class="gc-header"><span class="gc-icon">🔆</span><div><div class="gc-name">UV</div><div class="gc-unit">Voltage</div></div><div class="gc-badge" id="b-uv">—</div></div>
+        <svg viewBox="0 0 120 110" class="gsv"><path d="M 24.6 95.4 A 50 50 0 1 1 95.4 95.4" fill="none" style="stroke:var(--track)" stroke-width="10" stroke-linecap="round"/><path id="g-uv" d="M 24.6 95.4 A 50 50 0 1 1 95.4 95.4" fill="none" stroke="#ff006e" stroke-width="10" stroke-linecap="round" stroke-dasharray="235.6" stroke-dashoffset="235.6"/><text id="v-uv" x="60" y="64" text-anchor="middle" class="gv" style="font-size:14px">--</text><text x="60" y="80" text-anchor="middle" class="gu">V</text></svg>
+        <div class="gc-range">0 <span style="color:#374151">—</span> 3.3 V</div>
+        <div class="skeleton-overlay"></div>
+      </div>
+
+      <div class="gauge-card bar-type" id="card-soil" onclick="openFocus('soil')">
+        <div class="gc-header"><span class="gc-icon">🌱</span><div><div class="gc-name">Soil Dryness</div><div class="gc-unit">Analog reading — higher = drier</div></div><div class="gc-badge" id="b-soil">—</div></div>
+        <div class="big-val" id="v-soil">-- <span class="big-unit">raw</span></div>
+        <div class="bar-wrap"><div class="bar-track"><div class="bar-fill" id="bf-soil" style="--c:#8338ec"></div></div></div>
+        <div class="bar-labels"><span>0</span><span style="color:#ff7090">Threshold: 3000</span><span>4095</span></div>
+        <div class="skeleton-overlay"></div>
+      </div>
+
+      <div class="gauge-card bar-type" id="card-rain" onclick="openFocus('rain')">
+        <div class="gc-header"><span class="gc-icon">🌧️</span><div><div class="gc-name">Rain</div><div class="gc-unit">Analog reading</div></div><div class="gc-badge" id="b-rain">—</div></div>
+        <div class="big-val" id="v-rain">-- <span class="big-unit">raw</span></div>
+        <div class="bar-wrap"><div class="bar-track"><div class="bar-fill" id="bf-rain" style="--c:#06d6a0"></div></div></div>
+        <div class="bar-labels"><span>0</span><span>4095</span></div>
+        <div class="skeleton-overlay"></div>
+      </div>
+    </div>
+
+    <div class="list-view" id="list-view">
+      <div class="list-head">
+        <span>Sensor</span><span>Value</span><span>Status</span><span></span>
+      </div>
+      <div class="list-body" id="list-body"></div>
+      <div class="skeleton-overlay"></div>
+    </div>
+
+    <!-- CHART + ALERTS -->
+    <div class="bottom-grid">
+      <div class="card chart-card">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">History — Last 30 points</h3>
+            <p class="card-desc">Temperature, humidity and light</p>
+          </div>
+          <div class="legend">
+            <span class="leg" style="--c:#ff6b35">Temperature</span>
+            <span class="leg" style="--c:#00b4d8">Humidity</span>
+            <span class="leg" style="--c:#ffd60a">Light</span>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart" height="90"></canvas>
+          <div class="skeleton-overlay skeleton-chart"></div>
+          <div class="chart-empty" id="chart-empty">
+            <div class="ce2-icon">📈</div>
+            <p>No historical data yet — waiting for the first readings...</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card alerts-card">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">Alert Log</h3>
+            <p class="card-desc">Recent events</p>
+          </div>
+        </div>
+        <div class="alerts-list" id="alerts-list">
+          <div class="no-alerts">✅ No alerts</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- Alert toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Focus view modal -->
+<div class="focus-modal" id="focus-modal" onclick="if(event.target===this) closeFocus()">
+  <div class="focus-panel">
+    <div class="focus-head">
+      <div class="focus-title">
+        <span class="focus-icon" id="fm-icon">🌡️</span>
+        <div><div class="focus-name" id="fm-name">Temperature</div><div class="focus-sub" id="fm-sub">°C</div></div>
+      </div>
+      <button class="focus-close" onclick="closeFocus()" title="Close (Esc)">✕</button>
+    </div>
+    <div class="focus-body">
+      <div class="focus-value" id="fm-value">--</div>
+      <div class="focus-badge" id="fm-badge">—</div>
+      <div class="chart-wrap">
+        <canvas id="focus-chart" height="220"></canvas>
+        <div class="chart-empty" id="focus-chart-empty">
+          <div class="ce2-icon">📈</div>
+          <p>No historical data yet for this sensor.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Command palette -->
+<div class="cmdk-overlay" id="cmdk-overlay" onclick="if(event.target===this) closeCmdk()">
+  <div class="cmdk-panel">
+    <div class="cmdk-input-wrap">
+      <span class="cmdk-search-icon">⌘</span>
+      <input type="text" id="cmdk-input" class="cmdk-input" placeholder="Search sensors or actions..." autocomplete="off"/>
+      <kbd class="cmdk-esc">Esc</kbd>
+    </div>
+    <div class="cmdk-results" id="cmdk-results"></div>
+  </div>
+</div>
+
+<!-- Keyboard shortcuts hint -->
+<button class="shortcuts-trigger" id="shortcuts-trigger" title="Keyboard shortcuts">?</button>
+<div class="shortcuts-panel" id="shortcuts-panel">
+  <div class="sp-title">Keyboard shortcuts</div>
+  <div class="sp-row"><span>Command palette</span><kbd>Ctrl K</kbd></div>
+  <div class="sp-row"><span>Toggle dark / light mode</span><kbd>D</kbd></div>
+  <div class="sp-row"><span>Refresh data</span><kbd>R</kbd></div>
+  <div class="sp-row"><span>Close modal / overlay</span><kbd>Esc</kbd></div>
+</div>
+
+<script src="/static/shell.js?v=1"></script>
+<script src="/static/dashboard.js?v=4"></script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>EnvMonitor — IoT Environmental Monitoring System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--p:#6366f1;--s:#00d4ff;--bg:#ffffff;--card:#ffffff;--b:#e7eaf2;--t:#12141f;--m:#64748b;--grad:linear-gradient(135deg,#6366f1,#00d4ff)}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t);overflow-x:hidden}
+a{text-decoration:none}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;background:rgba(255,255,255,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--b)}
+.logo{font-size:1.1rem;font-weight:900;letter-spacing:1.5px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-r{display:flex;align-items:center;gap:28px}
+.nav-r a{color:var(--m);font-size:.88rem;font-weight:500;transition:color .2s}
+.nav-r a:hover{color:var(--t)}
+.btn{display:inline-flex;align-items:center;gap:7px;background:var(--grad);color:#fff;border:none;border-radius:10px;padding:9px 20px;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .2s,transform .1s}
+.btn:hover{opacity:.88}.btn:active{transform:scale(.97)}
+.btn-out{display:inline-flex;align-items:center;gap:7px;background:transparent;color:var(--t);border:1px solid var(--b);border-radius:10px;padding:9px 20px;font-size:.88rem;font-weight:500;transition:border-color .2s,background .2s}
+.btn-out:hover{border-color:var(--p);background:#6366f10c}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:130px 24px 80px;position:relative;overflow:hidden;text-align:center}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -10%,#6366f114,transparent 65%),radial-gradient(ellipse 50% 40% at 80% 80%,#00d4ff0c,transparent 55%),radial-gradient(ellipse 40% 50% at 10% 70%,#8b5cf60c,transparent 55%)}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(99,102,241,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.05) 1px,transparent 1px);background-size:64px 64px}
+.hero-inner{position:relative;z-index:1;max-width:900px;width:100%}
+.badge{display:inline-flex;align-items:center;gap:8px;background:#6366f112;border:1px solid #6366f130;color:#4f46e5;border-radius:20px;padding:5px 15px;font-size:.8rem;font-weight:600;margin-bottom:28px}
+.bdot{width:6px;height:6px;border-radius:50%;background:#6366f1;animation:p 1.5s ease-in-out infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.2}}
+.hero h1{font-size:clamp(2.2rem,5.5vw,4rem);font-weight:900;line-height:1.12;margin-bottom:20px;letter-spacing:-.5px;color:var(--t)}
+.hero h1 span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:1.05rem;color:var(--m);line-height:1.75;margin-bottom:36px;max-width:580px;margin-left:auto;margin-right:auto}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:80px}
+
+/* FLOATING CARDS */
+.float-stage{position:relative;max-width:880px;margin:0 auto;height:330px}
+.float-card{position:absolute;background:#fff;border:1px solid var(--b);border-radius:16px;padding:18px 20px;box-shadow:0 20px 45px -12px #0f172920,0 4px 12px #0f172910;transition:transform .3s cubic-bezier(.4,0,.2,1);text-align:left}
+.float-card:hover{transform:translateY(-5px) rotate(0deg) scale(1.03)}
+.fc-1{top:6px;left:4%;width:150px;transform:rotate(-6deg)}
+.fc-2{top:36px;left:50%;transform:translateX(-50%) rotate(1deg);width:260px;z-index:2;box-shadow:0 28px 55px -12px #0f172928,0 6px 16px #0f172914}
+.fc-3{top:0;right:4%;width:150px;transform:rotate(5deg)}
+.fc-4{bottom:0;left:20%;width:210px;transform:rotate(-3deg)}
+.fcard-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:10px}
+.fcard-label{font-size:.7rem;color:var(--m);font-weight:600;letter-spacing:.3px;margin-bottom:4px}
+.fcard-value{font-size:1.55rem;font-weight:800;color:var(--t)}
+.fcard-value.sm{font-size:1.25rem}
+.fcard-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.fcard-ts{font-size:.78rem;color:var(--m)}
+.fcard-list{display:flex;flex-direction:column;gap:9px}
+.fcl-item{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;color:var(--t)}
+.fcl-item span{color:var(--m);font-weight:500}
+.fcl-item b{font-weight:700}
+.fcard-dots{display:flex;gap:6px;margin-top:8px}
+.fcard-dots span{width:16px;height:16px;border-radius:5px;display:inline-block}
+.live-tag{display:flex;align-items:center;gap:6px;background:#00c85115;border:1px solid #00c85130;color:#0a9a3f;border-radius:20px;padding:3px 12px;font-size:.72rem;font-weight:700}
+.ldot{width:5px;height:5px;border-radius:50%;background:#0a9a3f;animation:p 1.2s ease-in-out infinite}
+
+/* SECTIONS */
+.section{padding:100px 24px}
+.container{max-width:1100px;margin:0 auto}
+.stag{display:inline-flex;align-items:center;gap:8px;background:#6366f112;border:1px solid #6366f130;color:#4f46e5;border-radius:20px;padding:5px 14px;font-size:.78rem;font-weight:600;margin-bottom:14px}
+.sh{font-size:clamp(1.7rem,3.5vw,2.6rem);font-weight:800;margin-bottom:12px;line-height:1.2;color:var(--t)}
+.sp{color:var(--m);font-size:.95rem;line-height:1.75;max-width:540px;margin-bottom:52px}
+
+/* FEATURES */
+.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.fc{background:var(--card);border:1px solid var(--b);border-radius:18px;padding:28px;transition:border-color .3s,transform .25s,box-shadow .3s;box-shadow:0 1px 2px #0f172906}
+.fc:hover{border-color:#6366f145;transform:translateY(-5px);box-shadow:0 16px 32px -10px #0f172916}
+.fi{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:16px}
+.fc h3{font-size:1rem;font-weight:700;margin-bottom:9px;color:var(--t)}
+.fc p{font-size:.86rem;color:var(--m);line-height:1.65}
+
+/* STATS */
+.ss{background:#f7f8fc;border-top:1px solid var(--b);border-bottom:1px solid var(--b)}
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--b);border:1px solid var(--b);border-radius:20px;overflow:hidden}
+.si{background:var(--card);padding:40px 20px;text-align:center}
+.sn{font-size:2.8rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sl{font-size:.85rem;color:var(--m);margin-top:6px}
+
+/* HOW */
+.hg{display:grid;grid-template-columns:repeat(3,1fr);gap:48px;position:relative}
+.hg::before{content:'';position:absolute;top:32px;left:calc(16.67% + 24px);right:calc(16.67% + 24px);height:1px;background:linear-gradient(90deg,var(--p),var(--s))}
+.hs{text-align:center}
+.hn{width:64px;height:64px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;margin:0 auto 22px;position:relative;z-index:1;box-shadow:0 10px 24px -6px #6366f150;color:#fff}
+.hs h3{font-size:1rem;font-weight:700;margin-bottom:9px;color:var(--t)}
+.hs p{font-size:.86rem;color:var(--m);line-height:1.65}
+
+/* CTA */
+.cta-box{background:linear-gradient(135deg,#6366f110,#00d4ff0c);border:1px solid #6366f124;border-radius:24px;padding:72px 40px;text-align:center}
+.cta-box h2{font-size:clamp(1.8rem,3vw,2.5rem);font-weight:800;margin-bottom:14px;color:var(--t)}
+.cta-box p{color:var(--m);font-size:.95rem;margin-bottom:32px}
+
+/* FOOTER */
+footer{padding:32px 48px;border-top:1px solid var(--b);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.fl{font-weight:800;font-size:.95rem;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+footer p{font-size:.8rem;color:var(--m)}
+footer p.fmuted{opacity:.7}
+
+.fi-in{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease}
+.fi-in.vis{opacity:1;transform:translateY(0)}
+
+@media(max-width:768px){
+  nav{padding:14px 20px}.nav-r a:not(.btn){display:none}
+  .fg{grid-template-columns:1fr}.sg{grid-template-columns:repeat(2,1fr)}
+  .hg{grid-template-columns:1fr;gap:32px}.hg::before{display:none}
+  .float-stage{height:auto;display:flex;flex-direction:column;gap:14px;max-width:320px}
+  .float-card{position:static;transform:none!important;width:100%!important}
+  .float-card:hover{transform:none!important}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">◈ ENVMONITOR</div>
+  <div class="nav-r">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="/login" class="btn">Login →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div><div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="badge"><span class="bdot"></span>Real-time IoT System</div>
+    <h1>Environmental monitoring,<br/><span>smart & precise</span></h1>
+    <p>Track temperature, humidity, air quality and more environmental metrics in real time. Built with ESP32 + FastAPI.</p>
+    <div class="hero-btns">
+      <a href="/login" class="btn">🚀 Go to Dashboard</a>
+      <a href="#features" class="btn-out">▶ Learn more</a>
+    </div>
+
+    <!-- Floating live-data cards -->
+    <div class="float-stage">
+      <div class="float-card fc-1">
+        <div class="fcard-icon" style="background:#ff6b3520;color:#ff6b35">🌡️</div>
+        <div class="fcard-label">Temperature</div>
+        <div class="fcard-value" id="p-temp">--°C</div>
+      </div>
+
+      <div class="float-card fc-2">
+        <div class="fcard-row">
+          <span class="live-tag"><span class="ldot"></span>LIVE</span>
+          <span class="fcard-ts" id="p-ts">--:--:--</span>
+        </div>
+        <div class="fcard-list">
+          <div class="fcl-item"><span>💧 Humidity</span><b id="p-hum">--%</b></div>
+          <div class="fcl-item"><span>☀️ Light</span><b id="p-lux">-- lux</b></div>
+          <div class="fcl-item"><span>🌱 Soil</span><b id="p-soil">-- raw</b></div>
+          <div class="fcl-item"><span>🔆 UV</span><b id="p-uv">-- V</b></div>
+        </div>
+      </div>
+
+      <div class="float-card fc-3">
+        <div class="fcard-icon" style="background:#06d6a020;color:#06d6a0">🌧️</div>
+        <div class="fcard-label">Rain</div>
+        <div class="fcard-value sm" id="p-rain">-- raw</div>
+      </div>
+
+      <div class="float-card fc-4">
+        <div class="fcard-label">6 sensors active</div>
+        <div class="fcard-dots">
+          <span style="background:#ff6b35"></span>
+          <span style="background:#00b4d8"></span>
+          <span style="background:#ffd60a"></span>
+          <span style="background:#8338ec"></span>
+          <span style="background:#06d6a0"></span>
+          <span style="background:#ff006e"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="section" id="features">
+  <div class="container">
+    <div class="stag">✦ Features</div>
+    <h2 class="sh fi-in">Full features<br/>for every need</h2>
+    <p class="sp fi-in">From basic monitoring to smart alerts, the system gives you everything you need to track your environment.</p>
+    <div class="fg">
+      <div class="fc fi-in"><div class="fi" style="background:#6366f120">🌡️</div><h3>6 Sensor Types</h3><p>Temperature, humidity, light level, soil moisture, rain and UV exposure.</p></div>
+      <div class="fc fi-in"><div class="fi" style="background:#00d4ff18">⚡</div><h3>Real-time Updates</h3><p>Data updates every 2 seconds from the ESP32 over HTTP. No manual page refresh needed.</p></div>
+      <div class="fc fi-in"><div class="fi" style="background:#ff6b3520">⚠️</div><h3>Smart Alerts</h3><p>Automatically detects and alerts you when readings exceed safe thresholds.</p></div>
+      <div class="fc fi-in"><div class="fi" style="background:#06d6a018">📊</div><h3>Historical Charts</h3><p>Track trends over time with clear, interactive line charts.</p></div>
+      <div class="fc fi-in"><div class="fi" style="background:#8338ec18">📱</div><h3>Responsive</h3><p>A UI that adapts to any device — desktop, tablet and mobile.</p></div>
+      <div class="fc fi-in"><div class="fi" style="background:#ffb70018">🔌</div><h3>Open API</h3><p>ESP32 connects easily via REST API. Just a simple HTTP POST with JSON.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="section ss">
+  <div class="container">
+    <div class="sg">
+      <div class="si fi-in"><div class="sn">6</div><div class="sl">Sensor Types</div></div>
+      <div class="si fi-in"><div class="sn">2s</div><div class="sl">Data Refresh</div></div>
+      <div class="si fi-in"><div class="sn">24/7</div><div class="sl">Continuous Monitoring</div></div>
+      <div class="si fi-in"><div class="sn">99%</div><div class="sl">Accuracy</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW -->
+<div class="section" id="how">
+  <div class="container">
+    <div class="stag">✦ How it works</div>
+    <h2 class="sh fi-in">Simple & effective</h2>
+    <p class="sp fi-in">Just 3 steps to start monitoring your environment today.</p>
+    <div class="hg">
+      <div class="hs fi-in"><div class="hn">1</div><h3>Connect sensors</h3><p>ESP32 + DHT11 reads environmental data and sends it to the server every 2 seconds over WiFi.</p></div>
+      <div class="hs fi-in"><div class="hn">2</div><h3>Server processes data</h3><p>The FastAPI backend receives and stores the data, automatically detecting anomalies.</p></div>
+      <div class="hs fi-in"><div class="hn">3</div><h3>Dashboard displays it</h3><p>The web dashboard updates in real time. View it anytime from your browser.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="section">
+  <div class="container">
+    <div class="cta-box fi-in">
+      <h2>Ready to get started?</h2>
+      <p>Log in now to view your real-time environmental monitoring dashboard.</p>
+      <a href="/login" class="btn" style="font-size:1rem;padding:13px 32px">🚀 Go to Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="fl">◈ ENVMONITOR</div>
+  <p>IoT Environment Monitoring System — ESP32 + FastAPI + Docker</p>
+  <p class="fmuted">© 2026 EnvMonitor</p>
+</footer>
+
+<script>
+// Fade in scroll
+const obs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('vis') }), {threshold:.08});
+document.querySelectorAll('.fi-in').forEach(el => obs.observe(el));
+
+// Live preview
+async function up() {
+  try {
+    const d = await (await fetch('/data/latest')).json();
+    document.getElementById('p-temp').textContent  = d.temperature + '°C';
+    document.getElementById('p-hum').textContent   = d.humidity + '%';
+    document.getElementById('p-lux').textContent   = d.lux + ' lux';
+    document.getElementById('p-soil').textContent  = d.soilAO + ' raw';
+    document.getElementById('p-uv').textContent    = d.uvVoltage + ' V';
+    document.getElementById('p-rain').textContent  = d.rainAO + ' raw';
+    document.getElementById('p-ts').textContent    = d.timestamp;
+  } catch(e) {}
+}
+up(); setInterval(up, 2000);
+</script>
+</body>
+</html>

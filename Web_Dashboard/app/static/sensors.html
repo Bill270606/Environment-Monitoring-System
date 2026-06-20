@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Sensors — EnvMonitor</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/dashboard.css?v=5"/>
+</head>
+<body class="is-loading">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon">◈</div>
+    <span>ENV<span class="acc">MONITOR</span></span>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-group-label">MAIN</div>
+    <a href="/dashboard" class="nav-item"><span class="ni">🏠</span> Overview</a>
+    <a href="/sensors" class="nav-item active"><span class="ni">📡</span> Sensors</a>
+    <a href="/alerts" class="nav-item"><span class="ni">⚠️</span> Alerts <span class="badge-n" id="alert-count">0</span></a>
+    <div class="nav-group-label" style="margin-top:20px">REPORTS</div>
+    <a href="/charts" class="nav-item"><span class="ni">📊</span> Charts</a>
+    <a href="#" class="nav-item disabled"><span class="ni">📋</span> Logs <span class="soon-badge">Soon</span></a>
+    <div class="nav-group-label" style="margin-top:20px">SYSTEM</div>
+    <a href="/settings" class="nav-item"><span class="ni">⚙️</span> Settings</a>
+    <a href="#" class="nav-item disabled"><span class="ni">❓</span> Help <span class="soon-badge">Soon</span></a>
+  </nav>
+  <div class="sb-user" id="sb-user">
+    <div class="sb-avatar" id="sb-avatar">U</div>
+    <div class="sb-info">
+      <div class="sb-name" id="sb-name">User</div>
+      <div class="sb-role">Admin</div>
+    </div>
+    <button class="sb-logout" onclick="logout()" title="Logout">⏏</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main" id="main">
+  <header class="topbar">
+    <div class="topbar-l">
+      <button class="hamburger" onclick="toggleSidebar()" id="hamburger">☰</button>
+      <div>
+        <h1 class="page-title">Sensors</h1>
+        <p class="page-sub">Sensor Node 01 — 6 sensors connected</p>
+      </div>
+    </div>
+    <div class="topbar-r">
+      <div class="conn-status" id="conn-status"><span class="conn-dot"></span>Connecting...</div>
+      <button class="theme-toggle" id="theme-toggle" title="Toggle Dark / Light mode (D)">🌙</button>
+      <button class="notif-btn" id="notif-btn">
+        🔔
+        <span class="notif-badge" id="notif-badge" style="display:none">0</span>
+      </button>
+      <div class="user-chip" id="user-chip">
+        <div class="chip-avatar" id="chip-avatar">U</div>
+        <span id="chip-name">User</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="content">
+    <!-- Connection error state -->
+    <div class="content-error" id="content-error">
+      <div class="ce-icon">📡</div>
+      <h3 class="ce-title">Connection lost</h3>
+      <p class="ce-desc">We can't reach the sensor server right now. Your data may be out of date.</p>
+      <button class="ce-retry" id="ce-retry">🔄 Retry</button>
+    </div>
+
+    <div class="section-header">
+      <h2 class="section-title">All Sensors</h2>
+      <div class="update-tag"><span class="u-dot"></span>Auto-updates every 2s</div>
+    </div>
+
+    <div class="sensors-detail-grid" id="sensors-detail-grid"></div>
+  </div>
+</div>
+
+<button class="shortcuts-trigger" id="shortcuts-trigger" title="Keyboard shortcuts">?</button>
+<div class="shortcuts-panel" id="shortcuts-panel">
+  <div class="sp-title">Keyboard shortcuts</div>
+  <div class="sp-row"><span>Toggle dark / light mode</span><kbd>D</kbd></div>
+  <div class="sp-row"><span>Refresh data</span><kbd>R</kbd></div>
+</div>
+
+<script src="/static/shell.js?v=1"></script>
+<script src="/static/sensors.js?v=2"></script>
+</body>
+</html>
