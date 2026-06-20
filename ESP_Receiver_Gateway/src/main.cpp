@@ -8,6 +8,7 @@ String apiKey = "4OUEBMRNTW46AP5J";
 
 
 String serverName = "http://api.thingspeak.com/update";
+String dashboardUrl = "https://iot-env-monitor.onrender.com/data/sensor";
 
 typedef struct struct_message {
   float temperature;
@@ -36,6 +37,28 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   Serial.printf("Rain (AO): %d | Soil (AO): %d\n", sensorData.rainAO, sensorData.soilAO);
   Serial.printf("UV Voltage: %.2f V\n", sensorData.uvVoltage);
   Serial.println("----------------------------");
+}
+
+void postToDashboard() {
+  HTTPClient http;
+  http.setTimeout(15000); // Render free tier can be asleep; give it time to wake up
+  http.begin(dashboardUrl);
+  http.addHeader("Content-Type", "application/json");
+
+  String json = "{";
+  json += "\"temperature\":" + String(sensorData.temperature) + ",";
+  json += "\"humidity\":"    + String(sensorData.humidity) + ",";
+  json += "\"lux\":"         + String(sensorData.lux) + ",";
+  json += "\"rainDO\":"      + String(sensorData.rainDO) + ",";
+  json += "\"rainAO\":"      + String(sensorData.rainAO) + ",";
+  json += "\"soilDO\":"      + String(sensorData.soilDO) + ",";
+  json += "\"soilAO\":"      + String(sensorData.soilAO) + ",";
+  json += "\"uvVoltage\":"   + String(sensorData.uvVoltage);
+  json += "}";
+
+  int code = http.POST(json);
+  Serial.printf("Dashboard POST -> %d\n", code);
+  http.end();
 }
 
 void setup() {
@@ -87,8 +110,10 @@ void loop() {
       
       http.end();
 
+      postToDashboard();
+
       previousMillis = millis();
-      isDataReady = false; 
+      isDataReady = false;
     }
   }
 }
