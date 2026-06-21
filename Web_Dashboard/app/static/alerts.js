@@ -58,6 +58,25 @@ function renderFullAlerts() {
   }).join('');
 }
 
+document.getElementById('export-alerts')?.addEventListener('click', () => {
+  const all = loadAlerts();
+  if(all.length === 0) { alert('No alerts to export yet.'); return; }
+
+  const rows = [['Date', 'Time', 'Type', 'Message']];
+  all.forEach(a => rows.push([a.date || '', a.time, typeOf(a.msg).label, a.msg]));
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `envmonitor-alerts-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
 document.getElementById('clear-alerts')?.addEventListener('click', () => {
   if(!confirm('Clear all alert history? This cannot be undone.')) return;
   localStorage.removeItem('em_alerts');

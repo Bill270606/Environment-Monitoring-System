@@ -1,13 +1,24 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.requests import Request
 from pydantic import BaseModel
-from typing import Optional
-import math, time, random
+from typing import Optional, List
+import math, time, random, json, os
 from collections import deque
+import anthropic
 
 app = FastAPI(title="EnvMonitor IoT")
 history = deque(maxlen=50)
+chat_client = anthropic.Anthropic() if os.environ.get("ANTHROPIC_API_KEY") else None
+CHAT_MODEL = "claude-haiku-4-5"
+
+@app.exception_handler(StarletteHTTPException)
+async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
+    if exc.status_code == 404:
+        return FileResponse("app/static/404.html", status_code=404)
+    return JSONResponse({"detail": exc.detail}, status_code=exc.status_code)
 
 # Real device data: set by POST /data/sensor (ESP32 Receiver Gateway), read by GET /data/latest.
 last_device_data = None
@@ -50,6 +61,13 @@ class SensorData(BaseModel):
     soilDO:      Optional[int] = None
     soilAO:      Optional[int] = None
     uvVoltage:   Optional[float] = None
+
+class ChatMessage(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: List[ChatMessage]
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
@@ -98,3 +116,49 @@ def receive(data: SensorData):
     last_device_time = time.time()
     history.append(entry)
     return {"status": "ok"}
+
+def build_chat_system_prompt():
+    d = latest_data()
+    return (
+        "You are the EnvMonitor Assistant, a friendly helper built into a small IoT "
+        "environmental monitoring dashboard for a garden/farm. Answer questions about "
+        "the current conditions and give short, practical, plain-language advice. "
+        "Keep replies to 2-4 sentences unless the user asks for more detail. "
+        "If a question has nothing to do with the dashboard or the garden, answer briefly "
+        "and steer back to what you can help with.\n\n"
+        f"Live sensor readings (source: {d.get('source')}, as of {d.get('timestamp')}):\n"
+        f"- Temperature: {d.get('temperature')} °C\n"
+        f"- Humidity: {d.get('humidity')} %\n"
+        f"- Light: {d.get('lux')} lux\n"
+        f"- Soil dryness (raw analog, higher = drier): {d.get('soilAO')}\n"
+        f"- Rain sensor (raw analog): {d.get('rainAO')}\n"
+        f"- UV sensor voltage: {d.get('uvVoltage')} V\n"
+    )
+
+@app.post("/api/chat")
+def chat(req: ChatRequest):
+    if chat_client is None:
+        def missing_key():
+            msg = "Chat is not configured yet — the server is missing an ANTHROPIC_API_KEY."
+            yield f"data: {json.dumps({'text': msg})}\n\n"
+            yield "data: [DONE]\n\n"
+        return StreamingResponse(missing_key(), media_type="text/event-stream")
+
+    system_prompt = build_chat_system_prompt()
+    messages = [{"role": m.role, "content": m.content} for m in req.messages]
+
+    def generate():
+        try:
+            with chat_client.messages.stream(
+                model=CHAT_MODEL,
+                max_tokens=1024,
+                system=system_prompt,
+                messages=messages,
+            ) as stream:
+                for text in stream.text_stream:
+                    yield f"data: {json.dumps({'text': text})}\n\n"
+        except anthropic.APIError as e:
+            yield f"data: {json.dumps({'text': f'(Chat error: {e.message})'})}\n\n"
+        yield "data: [DONE]\n\n"
+
+    return StreamingResponse(generate(), media_type="text/event-stream")

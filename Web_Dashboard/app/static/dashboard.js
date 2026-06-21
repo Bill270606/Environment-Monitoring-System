@@ -464,6 +464,121 @@ document.getElementById('ce-retry')?.addEventListener('click', async () => {
   btn.textContent = '🔄 Retry';
 });
 
+// ── FARMER-FRIENDLY GARDEN STATUS ──
+const FARMER_THRESHOLDS = { tempLow: 18, humLow: 30, luxLow: 200 };
+
+function setFarmerBlock(key, value, label, status) {
+  const valEl = document.getElementById(`fb-${key}-value`);
+  const statusEl = document.getElementById(`fb-${key}-status`);
+  if(valEl) valEl.textContent = value;
+  if(statusEl) {
+    statusEl.textContent = `Status: ${label}`;
+    statusEl.className = 'fb-status ' + status;
+  }
+}
+
+function renderFarmerAlerts(alerts) {
+  const list = document.getElementById('fb-alerts-list');
+  if(!list) return;
+  if(alerts.length === 0) {
+    list.innerHTML = '<div class="fb-ok">✅ No alerts right now</div>';
+    return;
+  }
+  list.innerHTML = alerts.map(a => `
+    <div class="fb-alert-item ${a.level}">
+      <span class="fb-alert-icon">${a.icon}</span>
+      <span class="fb-alert-text">${a.text}</span>
+    </div>`).join('');
+}
+
+function updateFarmerView(d) {
+  const tempWarn = SENSORS.temp.warn ?? 35;
+  const humWarn  = SENSORS.hum.warn  ?? 85;
+  const soilWarn = SENSORS.soil.warn ?? 3000;
+  const { tempLow, humLow, luxLow } = FARMER_THRESHOLDS;
+
+  let tempStatus = 'ok', tempLabel = 'Good';
+  if(d.temperature > tempWarn)      { tempStatus = 'danger'; tempLabel = 'High'; }
+  else if(d.temperature < tempLow)  { tempStatus = 'warn';   tempLabel = 'Low'; }
+
+  let humStatus = 'ok', humLabel = 'Good';
+  if(d.humidity > humWarn)      { humStatus = 'warn'; humLabel = 'High'; }
+  else if(d.humidity < humLow)  { humStatus = 'warn'; humLabel = 'Low'; }
+
+  let luxStatus = 'ok', luxLabel = 'Good';
+  if(d.lux < luxLow) { luxStatus = 'warn'; luxLabel = 'Low light'; }
+
+  // Top summary readouts
+  const gsTemp = document.getElementById('gs-temp');
+  const gsHum  = document.getElementById('gs-hum');
+  const gsLux  = document.getElementById('gs-lux');
+  if(gsTemp) gsTemp.textContent = `${d.temperature} °C`;
+  if(gsHum)  gsHum.textContent  = `${d.humidity} %`;
+  if(gsLux)  gsLux.textContent  = luxLabel;
+
+  // 4 big blocks
+  setFarmerBlock('temp', `${d.temperature} °C`, tempLabel, tempStatus);
+  setFarmerBlock('hum',  `${d.humidity} %`,     humLabel,  humStatus);
+  setFarmerBlock('lux',  `${d.lux} lux`,        luxLabel,  luxStatus);
+
+  // Plain-language alerts
+  const alerts = [];
+  if(tempStatus === 'danger') alerts.push({ level:'danger', icon:'🔴', text:`Temperature is too high (${d.temperature}°C). Water the plants or provide some shade.` });
+  else if(tempStatus === 'warn') alerts.push({ level:'warn', icon:'🟠', text:`Temperature is low (${d.temperature}°C). Plants may grow slower — shield them from cold wind.` });
+
+  if(humLabel === 'Low') alerts.push({ level:'warn', icon:'🟠', text:`Air humidity is low (${d.humidity}%). Consider misting the plants or raising humidity.` });
+  else if(humLabel === 'High') alerts.push({ level:'warn', icon:'🟠', text:`Air humidity is high (${d.humidity}%). Plants are at risk of fungal disease — improve ventilation.` });
+
+  if(luxStatus === 'warn') alerts.push({ level:'info', icon:'🟡', text:'Light level is low. Plants may not get enough light to grow well — check their placement.' });
+
+  if(d.soilAO > soilWarn) alerts.push({ level:'warn', icon:'🟠', text:'Soil is dry. Plants may be short on water — check the irrigation system.' });
+
+  renderFarmerAlerts(alerts);
+
+  // Overall badge
+  const badge = document.getElementById('gs-badge');
+  if(badge) {
+    if(alerts.some(a => a.level === 'danger')) { badge.textContent = '🔴 Critical alert';   badge.className = 'gs-badge danger'; }
+    else if(alerts.length > 0)                 { badge.textContent = '🟠 Needs attention';   badge.className = 'gs-badge warn'; }
+    else                                        { badge.textContent = '🟢 Good conditions';  badge.className = 'gs-badge ok'; }
+  }
+}
+
+function renderThresholdLegend() {
+  const rows = document.getElementById('legend-rows');
+  if(!rows) return;
+  const t = FARMER_THRESHOLDS;
+  const tempWarn = SENSORS.temp.warn ?? 35;
+  const humWarn  = SENSORS.hum.warn  ?? 85;
+  const soilWarn = SENSORS.soil.warn ?? 3000;
+
+  rows.innerHTML = `
+    <div class="legend-row">
+      <span class="legend-sensor">🌡️ Temperature</span>
+      <span class="legend-chip ok">${t.tempLow}–${tempWarn}°C: Good</span>
+      <span class="legend-chip warn">Below ${t.tempLow}°C: Low</span>
+      <span class="legend-chip danger">Above ${tempWarn}°C: High</span>
+    </div>
+    <div class="legend-row">
+      <span class="legend-sensor">💧 Humidity</span>
+      <span class="legend-chip ok">${t.humLow}–${humWarn}%: Good</span>
+      <span class="legend-chip warn">Below ${t.humLow}%: Low</span>
+      <span class="legend-chip warn">Above ${humWarn}%: High</span>
+    </div>
+    <div class="legend-row">
+      <span class="legend-sensor">☀️ Light</span>
+      <span class="legend-chip ok">${t.luxLow}+ lux: Good</span>
+      <span class="legend-chip warn">Below ${t.luxLow} lux: Low</span>
+    </div>
+    <div class="legend-row">
+      <span class="legend-sensor">🌱 Soil</span>
+      <span class="legend-chip ok">0–${soilWarn} (raw): Good</span>
+      <span class="legend-chip warn">Above ${soilWarn} (raw): Dry, needs attention</span>
+    </div>
+  `;
+}
+renderThresholdLegend();
+
 // ── MAIN UPDATE ──
 const prevAlerts = {};
 
@@ -518,6 +633,9 @@ async function fetchData() {
     // Chart
     addChartPoint(d);
     pushHistory(d);
+
+    // Farmer-friendly summary
+    updateFarmerView(d);
 
   } catch(e) {
     document.body.classList.remove('is-loading');

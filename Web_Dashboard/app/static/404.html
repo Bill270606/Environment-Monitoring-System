@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg"/>
+<meta name="theme-color" content="#0d1626"/>
+<title>Page not found — EnvMonitor</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--p:#6366f1;--s:#00d4ff;--bg:#030712;--card:#0d1117;--b:#1f2937;--t:#f1f5f9;--m:#64748b;--grad:linear-gradient(135deg,#6366f1,#00d4ff)}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden}
+.bg{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 70% 60% at 30% 20%,#6366f122,transparent 60%),radial-gradient(ellipse 50% 50% at 75% 75%,#00d4ff15,transparent 55%)}
+.card{position:relative;z-index:1;background:#0d111acc;backdrop-filter:blur(20px);border:1px solid #ffffff12;border-radius:24px;padding:48px 40px;width:100%;max-width:440px;text-align:center;box-shadow:0 32px 64px #00000080}
+.logo{font-size:1rem;font-weight:900;letter-spacing:1.5px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:28px;display:block}
+.code{font-size:4.5rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.card h1{font-size:1.3rem;font-weight:800;margin:12px 0 8px}
+.card p{font-size:.9rem;color:var(--m);margin-bottom:28px;line-height:1.6}
+.btn{display:inline-flex;align-items:center;gap:7px;background:var(--grad);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:.9rem;font-weight:700;cursor:pointer;text-decoration:none;transition:opacity .2s}
+.btn:hover{opacity:.88}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="card">
+  <span class="logo">◈ ENVMONITOR</span>
+  <div class="code">404</div>
+  <h1>Page not found</h1>
+  <p>The page you're looking for doesn't exist or may have moved.</p>
+  <a href="/dashboard" class="btn">🏠 Back to Dashboard</a>
+</div>
+</body>
+</html>

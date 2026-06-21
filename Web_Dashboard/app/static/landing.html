@@ -2,24 +2,36 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg"/>
+<meta name="theme-color" content="#0d1626"/>
 <title>EnvMonitor — IoT Environmental Monitoring System</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--p:#6366f1;--s:#00d4ff;--bg:#ffffff;--card:#ffffff;--b:#e7eaf2;--t:#12141f;--m:#64748b;--grad:linear-gradient(135deg,#6366f1,#00d4ff)}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t);overflow-x:hidden}
 a{text-decoration:none}
+h1,h2,h3,.logo,.fl{font-family:'Poppins',sans-serif}
 
 /* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;background:rgba(255,255,255,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--b)}
 .logo{font-size:1.1rem;font-weight:900;letter-spacing:1.5px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.nav-r{display:flex;align-items:center;gap:28px}
-.nav-r a{color:var(--m);font-size:.88rem;font-weight:500;transition:color .2s}
-.nav-r a:hover{color:var(--t)}
+.nav-r{display:flex;align-items:center;gap:30px}
+.nav-r a:not(.nav-cta){color:var(--m);font-size:.78rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;transition:color .2s}
+.nav-r a:not(.nav-cta):hover{color:var(--t)}
 .btn{display:inline-flex;align-items:center;gap:7px;background:var(--grad);color:#fff;border:none;border-radius:10px;padding:9px 20px;font-size:.88rem;font-weight:600;cursor:pointer;transition:opacity .2s,transform .1s}
 .btn:hover{opacity:.88}.btn:active{transform:scale(.97)}
 .btn-out{display:inline-flex;align-items:center;gap:7px;background:transparent;color:var(--t);border:1px solid var(--b);border-radius:10px;padding:9px 20px;font-size:.88rem;font-weight:500;transition:border-color .2s,background .2s}
 .btn-out:hover{border-color:var(--p);background:#6366f10c}
+.nav-cta{display:inline-flex;align-items:center;gap:7px;background:transparent;color:var(--t);border:1.5px solid var(--t);border-radius:8px;padding:9px 22px;font-size:.76rem;font-weight:800;letter-spacing:.8px;text-transform:uppercase;transition:background .2s,color .2s}
+.nav-cta:hover{background:var(--t);color:#fff}
+
+/* SOCIAL RAIL */
+.social-rail{position:fixed;right:22px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:14px;z-index:90}
+.social-icon{width:40px;height:40px;border-radius:50%;background:var(--card);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;color:var(--m);box-shadow:0 4px 14px #0f172914;transition:background .2s cubic-bezier(.4,0,.2,1),color .2s cubic-bezier(.4,0,.2,1),transform .2s cubic-bezier(.4,0,.2,1)}
+.social-icon:hover{background:var(--t);color:#fff;transform:scale(1.08)}
+.social-icon svg{width:18px;height:18px;fill:currentColor}
+@media(max-width:900px){.social-rail{display:none}}
 
 /* HERO */
 .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:130px 24px 80px;position:relative;overflow:hidden;text-align:center}
@@ -32,7 +44,16 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .hero h1{font-size:clamp(2.2rem,5.5vw,4rem);font-weight:900;line-height:1.12;margin-bottom:20px;letter-spacing:-.5px;color:var(--t)}
 .hero h1 span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .hero p{font-size:1.05rem;color:var(--m);line-height:1.75;margin-bottom:36px;max-width:580px;margin-left:auto;margin-right:auto}
-.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:80px}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}
+.live-strip{display:inline-flex;align-items:center;gap:7px;color:var(--m);font-size:.8rem;font-weight:600;margin-bottom:56px}
+
+/* HERO BACKGROUND BLOBS */
+.blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.35;animation:float 14s ease-in-out infinite;will-change:transform}
+.blob-1{width:380px;height:380px;background:#6366f1;top:-80px;left:8%}
+.blob-2{width:320px;height:320px;background:#00d4ff;top:40%;right:6%;animation-delay:-4s}
+.blob-3{width:300px;height:300px;background:#8b5cf6;bottom:-100px;left:35%;animation-delay:-8s}
+@keyframes float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-25px) scale(1.08)}66%{transform:translate(-20px,20px) scale(.95)}}
+@media(prefers-reduced-motion:reduce){.blob{animation:none}}
 
 /* FLOATING CARDS */
 .float-stage{position:relative;max-width:880px;margin:0 auto;height:330px}
@@ -64,6 +85,32 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .sh{font-size:clamp(1.7rem,3.5vw,2.6rem);font-weight:800;margin-bottom:12px;line-height:1.2;color:var(--t)}
 .sp{color:var(--m);font-size:.95rem;line-height:1.75;max-width:540px;margin-bottom:52px}
 
+/* BUILT WITH */
+.built-with{padding:26px 24px;border-bottom:1px solid var(--b)}
+.bw-inner{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap}
+.bw-label{font-size:.75rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--m)}
+.bw-items{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.bw-item{display:inline-flex;align-items:center;gap:6px;background:#f7f8fc;border:1px solid var(--b);border-radius:20px;padding:6px 14px;font-size:.8rem;font-weight:600;color:var(--t)}
+
+/* DASHBOARD MOCKUP PREVIEW */
+.mockup-frame{max-width:880px;margin:0 auto;border-radius:16px;overflow:hidden;background:#0d1626;box-shadow:0 40px 80px -24px #0f172940,0 1px 0 #ffffff10 inset;border:1px solid #1a2d4a}
+.mockup-bar{display:flex;align-items:center;gap:8px;padding:11px 16px;background:#070d1a;border-bottom:1px solid #1a2d4a}
+.mockup-dot{width:10px;height:10px;border-radius:50%}
+.mockup-url{margin:0 auto;font-size:.72rem;color:#4a6a8a;font-family:monospace}
+.mockup-body{display:flex;min-height:280px}
+.mockup-sidebar{width:150px;flex-shrink:0;background:#070d1a;border-right:1px solid #1a2d4a;padding:16px 10px;display:flex;flex-direction:column;gap:4px}
+.mockup-logo{font-size:.72rem;font-weight:800;color:#00d4ff;letter-spacing:.5px;padding:0 8px 14px}
+.mockup-nav-item{font-size:.74rem;color:#4a6a8a;padding:7px 10px;border-radius:7px;display:flex;align-items:center;gap:7px}
+.mockup-nav-item.active{background:linear-gradient(135deg,#6366f1,#00d4ff);color:#fff;font-weight:600}
+.mockup-main{flex:1;padding:20px;display:flex;flex-direction:column;gap:16px}
+.mockup-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.mockup-card{background:#131e36;border:1px solid #1a2d4a;border-radius:10px;padding:13px 14px}
+.mc-label{font-size:.66rem;color:#4a6a8a;font-weight:600;margin-bottom:6px}
+.mc-value{font-size:1.2rem;font-weight:800}
+.mockup-chart{flex:1;background:#131e36;border:1px solid #1a2d4a;border-radius:10px;padding:14px;min-height:90px}
+.mockup-chart svg{width:100%;height:100%}
+@media(max-width:640px){.mockup-sidebar{display:none}.mockup-cards{grid-template-columns:1fr}}
+
 /* FEATURES */
 .fg{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .fc{background:var(--card);border:1px solid var(--b);border-radius:18px;padding:28px;transition:border-color .3s,transform .25s,box-shadow .3s;box-shadow:0 1px 2px #0f172906}
@@ -84,8 +131,19 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .hg::before{content:'';position:absolute;top:32px;left:calc(16.67% + 24px);right:calc(16.67% + 24px);height:1px;background:linear-gradient(90deg,var(--p),var(--s))}
 .hs{text-align:center}
 .hn{width:64px;height:64px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;margin:0 auto 22px;position:relative;z-index:1;box-shadow:0 10px 24px -6px #6366f150;color:#fff}
+.hn svg{width:28px;height:28px}
 .hs h3{font-size:1rem;font-weight:700;margin-bottom:9px;color:var(--t)}
 .hs p{font-size:.86rem;color:var(--m);line-height:1.65}
+
+/* FAQ */
+.faq-list{display:flex;flex-direction:column;gap:10px;max-width:720px}
+.faq-item{background:var(--card);border:1px solid var(--b);border-radius:14px;padding:18px 22px;transition:border-color .2s}
+.faq-item:hover{border-color:#6366f140}
+.faq-item summary{cursor:pointer;font-weight:700;font-size:.95rem;color:var(--t);list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{content:'+';font-size:1.3rem;font-weight:400;color:var(--m);transition:transform .25s;flex-shrink:0}
+.faq-item[open] summary::after{transform:rotate(45deg)}
+.faq-item p{margin-top:12px;font-size:.86rem;color:var(--m);line-height:1.65}
 
 /* CTA */
 .cta-box{background:linear-gradient(135deg,#6366f110,#00d4ff0c);border:1px solid #6366f124;border-radius:24px;padding:72px 40px;text-align:center}
@@ -93,10 +151,19 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:cen
 .cta-box p{color:var(--m);font-size:.95rem;margin-bottom:32px}
 
 /* FOOTER */
-footer{padding:32px 48px;border-top:1px solid var(--b);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+footer{padding:56px 48px 0;border-top:1px solid var(--b)}
 .fl{font-weight:800;font-size:.95rem;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-footer p{font-size:.8rem;color:var(--m)}
-footer p.fmuted{opacity:.7}
+.footer-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:40px;max-width:1100px;margin:0 auto;padding-bottom:40px}
+.footer-brand p{font-size:.85rem;color:var(--m);line-height:1.6;margin-top:12px;max-width:280px}
+.footer-h{font-size:.78rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--t);margin-bottom:14px}
+.footer-col a{display:block;color:var(--m);font-size:.85rem;margin-bottom:10px;transition:color .2s}
+.footer-col a:hover{color:var(--t)}
+.footer-social{display:flex;gap:10px}
+.footer-social a{width:36px;height:36px;border-radius:50%;background:#f7f8fc;border:1px solid var(--b);display:flex;align-items:center;justify-content:center;color:var(--m);transition:background .2s,color .2s;margin-bottom:0}
+.footer-social a:hover{background:var(--t);color:#fff}
+.footer-social svg{width:16px;height:16px;fill:currentColor}
+.footer-bottom{border-top:1px solid var(--b);padding:20px 0;text-align:center}
+footer p.fmuted{font-size:.8rem;color:var(--m);opacity:.7}
 
 .fi-in{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease}
 .fi-in.vis{opacity:1;transform:translateY(0)}
@@ -108,6 +175,9 @@ footer p.fmuted{opacity:.7}
   .float-stage{height:auto;display:flex;flex-direction:column;gap:14px;max-width:320px}
   .float-card{position:static;transform:none!important;width:100%!important}
   .float-card:hover{transform:none!important}
+  .footer-grid{grid-template-columns:1fr;gap:28px;text-align:center}
+  .footer-brand p{margin-left:auto;margin-right:auto}
+  .footer-social{justify-content:center}
 }
 </style>
 </head>
@@ -116,15 +186,34 @@ footer p.fmuted{opacity:.7}
 <nav>
   <div class="logo">◈ ENVMONITOR</div>
   <div class="nav-r">
+    <a href="/">Home</a>
     <a href="#features">Features</a>
     <a href="#how">How it works</a>
-    <a href="/login" class="btn">Login →</a>
+    <a href="#faq">FAQ</a>
+    <a href="/login" class="nav-cta">Login</a>
   </div>
 </nav>
 
+<!-- Floating social rail -->
+<div class="social-rail">
+  <a href="#" class="social-icon" aria-label="Facebook (coming soon)" title="Facebook — coming soon">
+    <svg viewBox="0 0 24 24"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.16 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.89 3.78-3.89 1.1 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.91h-2.34V22c4.78-.78 8.44-4.94 8.44-9.94Z"/></svg>
+  </a>
+  <a href="#" class="social-icon" aria-label="Instagram (coming soon)" title="Instagram — coming soon">
+    <svg viewBox="0 0 24 24"><path d="M12 2c2.72 0 3.06.01 4.12.06 1.07.05 1.79.22 2.43.46.66.26 1.21.6 1.76 1.15.5.49.85 1 1.12 1.69.24.62.41 1.36.46 2.43.05 1.06.06 1.4.06 4.12s-.01 3.06-.06 4.12c-.05 1.07-.22 1.79-.46 2.43-.26.66-.6 1.21-1.15 1.76-.49.5-1 .85-1.69 1.12-.62.24-1.36.41-2.43.46-1.06.05-1.4.06-4.12.06s-3.06-.01-4.12-.06c-1.07-.05-1.79-.22-2.43-.46a4.9 4.9 0 0 1-1.76-1.15 4.9 4.9 0 0 1-1.12-1.69c-.24-.62-.41-1.36-.46-2.43C2 15.06 2 14.72 2 12s.01-3.06.06-4.12c.05-1.07.22-1.79.46-2.43.26-.66.6-1.21 1.15-1.76.49-.5 1-.85 1.69-1.12.62-.24 1.36-.41 2.43-.46C8.94 2 9.28 2 12 2Zm0 4.32a5.68 5.68 0 1 0 0 11.36 5.68 5.68 0 0 0 0-11.36Zm0 9.37a3.69 3.69 0 1 1 0-7.38 3.69 3.69 0 0 1 0 7.38Zm5.9-9.6a1.33 1.33 0 1 1-2.66 0 1.33 1.33 0 0 1 2.66 0Z"/></svg>
+  </a>
+  <a href="https://github.com/Bill270606/iot-env-monitor" target="_blank" rel="noopener" class="social-icon" aria-label="GitHub repository">
+    <svg viewBox="0 0 24 24"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-2.17c-3.2.7-3.87-1.36-3.87-1.36-.53-1.33-1.29-1.69-1.29-1.69-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.29 1.2-3.1-.12-.29-.52-1.46.11-3.05 0 0 .98-.31 3.2 1.18a11.1 11.1 0 0 1 5.83 0c2.22-1.49 3.2-1.18 3.2-1.18.63 1.59.23 2.76.11 3.05.75.81 1.2 1.84 1.2 3.1 0 4.43-2.69 5.41-5.25 5.69.42.36.78 1.07.78 2.17v3.22c0 .3.21.66.79.55C20.21 21.38 23.5 17.07 23.5 12 23.5 5.73 18.27.5 12 .5Z"/></svg>
+  </a>
+</div>
+
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-bg"></div><div class="hero-grid"></div>
+  <div class="hero-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div><div class="hero-grid"></div>
   <div class="hero-inner">
     <div class="badge"><span class="bdot"></span>Real-time IoT System</div>
     <h1>Environmental monitoring,<br/><span>smart & precise</span></h1>
@@ -133,6 +222,7 @@ footer p.fmuted{opacity:.7}
       <a href="/login" class="btn">🚀 Go to Dashboard</a>
       <a href="#features" class="btn-out">▶ Learn more</a>
     </div>
+    <div class="live-strip"><span class="ldot"></span>Live · 6 sensors · updates every 2s</div>
 
     <!-- Floating live-data cards -->
     <div class="float-stage">
@@ -176,6 +266,59 @@ footer p.fmuted{opacity:.7}
   </div>
 </div>
 
+<!-- BUILT WITH -->
+<div class="built-with">
+  <div class="container bw-inner">
+    <span class="bw-label">Powered by</span>
+    <div class="bw-items">
+      <span class="bw-item">⚙️ ESP32</span>
+      <span class="bw-item">🚀 FastAPI</span>
+      <span class="bw-item">📊 Chart.js</span>
+      <span class="bw-item">☁️ Render</span>
+      <span class="bw-item">🤖 Claude AI</span>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD PREVIEW -->
+<div class="section" style="padding-top:0">
+  <div class="container">
+    <div class="stag">✦ Live Preview</div>
+    <h2 class="sh fi-in">See the dashboard<br/>in action</h2>
+    <p class="sp fi-in">A real-time control center for your environment — sensors, charts and alerts in one place.</p>
+    <div class="mockup-frame fi-in">
+      <div class="mockup-bar">
+        <span class="mockup-dot" style="background:#ff5f57"></span>
+        <span class="mockup-dot" style="background:#febc2e"></span>
+        <span class="mockup-dot" style="background:#28c840"></span>
+        <span class="mockup-url">iot-env-monitor.onrender.com/dashboard</span>
+      </div>
+      <div class="mockup-body">
+        <div class="mockup-sidebar">
+          <div class="mockup-logo">◈ ENVMONITOR</div>
+          <div class="mockup-nav-item active">🏠 Overview</div>
+          <div class="mockup-nav-item">📡 Sensors</div>
+          <div class="mockup-nav-item">⚠️ Alerts</div>
+          <div class="mockup-nav-item">📊 Charts</div>
+          <div class="mockup-nav-item">⚙️ Settings</div>
+        </div>
+        <div class="mockup-main">
+          <div class="mockup-cards">
+            <div class="mockup-card"><div class="mc-label">Temperature</div><div class="mc-value" style="color:#ff6b35">29.4°C</div></div>
+            <div class="mockup-card"><div class="mc-label">Humidity</div><div class="mc-value" style="color:#00b4d8">68%</div></div>
+            <div class="mockup-card"><div class="mc-label">Light</div><div class="mc-value" style="color:#ffd60a">412 lux</div></div>
+          </div>
+          <div class="mockup-chart">
+            <svg viewBox="0 0 300 80" preserveAspectRatio="none">
+              <polyline points="0,60 30,50 60,55 90,30 120,40 150,20 180,35 210,15 240,28 270,10 300,22" fill="none" stroke="#6366f1" stroke-width="2.5"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- FEATURES -->
 <div class="section" id="features">
   <div class="container">
@@ -212,9 +355,36 @@ footer p.fmuted{opacity:.7}
     <h2 class="sh fi-in">Simple & effective</h2>
     <p class="sp fi-in">Just 3 steps to start monitoring your environment today.</p>
     <div class="hg">
-      <div class="hs fi-in"><div class="hn">1</div><h3>Connect sensors</h3><p>ESP32 + DHT11 reads environmental data and sends it to the server every 2 seconds over WiFi.</p></div>
-      <div class="hs fi-in"><div class="hn">2</div><h3>Server processes data</h3><p>The FastAPI backend receives and stores the data, automatically detecting anomalies.</p></div>
-      <div class="hs fi-in"><div class="hn">3</div><h3>Dashboard displays it</h3><p>The web dashboard updates in real time. View it anytime from your browser.</p></div>
+      <div class="hs fi-in"><div class="hn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></div><h3>Connect sensors</h3><p>ESP32 + DHT11 reads environmental data and sends it to the server every 2 seconds over WiFi.</p></div>
+      <div class="hs fi-in"><div class="hn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg></div><h3>Server processes data</h3><p>The FastAPI backend receives and stores the data, automatically detecting anomalies.</p></div>
+      <div class="hs fi-in"><div class="hn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><h3>Dashboard displays it</h3><p>The web dashboard updates in real time. View it anytime from your browser.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="section" id="faq">
+  <div class="container">
+    <div class="stag">✦ FAQ</div>
+    <h2 class="sh fi-in">Frequently asked<br/>questions</h2>
+    <p class="sp fi-in">Quick answers about how the system works.</p>
+    <div class="faq-list">
+      <details class="faq-item fi-in">
+        <summary>Does it need an internet connection?</summary>
+        <p>Yes — the ESP32 gateway sends readings to the server over WiFi, and the dashboard is a web app you view in any browser.</p>
+      </details>
+      <details class="faq-item fi-in">
+        <summary>How accurate are the sensor readings?</summary>
+        <p>Accuracy depends on the sensors used (temperature/humidity, soil, rain, UV modules) — typically within a few percent, which is good enough for everyday monitoring.</p>
+      </details>
+      <details class="faq-item fi-in">
+        <summary>Can I try it without real hardware connected?</summary>
+        <p>Yes. When no device has reported data recently, the dashboard automatically shows realistic simulated readings so you can explore every feature.</p>
+      </details>
+      <details class="faq-item fi-in">
+        <summary>Is this project open source?</summary>
+        <p>Yes — the full source code for both the dashboard and the ESP32 firmware is available on GitHub.</p>
+      </details>
     </div>
   </div>
 </div>
@@ -231,9 +401,35 @@ footer p.fmuted{opacity:.7}
 </div>
 
 <footer>
-  <div class="fl">◈ ENVMONITOR</div>
-  <p>IoT Environment Monitoring System — ESP32 + FastAPI + Docker</p>
-  <p class="fmuted">© 2026 EnvMonitor</p>
+  <div class="footer-grid">
+    <div class="footer-col footer-brand">
+      <div class="fl">◈ ENVMONITOR</div>
+      <p>IoT Environment Monitoring System — ESP32 + FastAPI + Docker.</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">Quick Links</div>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/login">Login</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-h">Connect</div>
+      <div class="footer-social">
+        <a href="#" aria-label="Facebook (coming soon)" title="Facebook — coming soon">
+          <svg viewBox="0 0 24 24"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.16 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.89 3.78-3.89 1.1 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.91h-2.34V22c4.78-.78 8.44-4.94 8.44-9.94Z"/></svg>
+        </a>
+        <a href="#" aria-label="Instagram (coming soon)" title="Instagram — coming soon">
+          <svg viewBox="0 0 24 24"><path d="M12 2c2.72 0 3.06.01 4.12.06 1.07.05 1.79.22 2.43.46.66.26 1.21.6 1.76 1.15.5.49.85 1 1.12 1.69.24.62.41 1.36.46 2.43.05 1.06.06 1.4.06 4.12s-.01 3.06-.06 4.12c-.05 1.07-.22 1.79-.46 2.43-.26.66-.6 1.21-1.15 1.76-.49.5-1 .85-1.69 1.12-.62.24-1.36.41-2.43.46-1.06.05-1.4.06-4.12.06s-3.06-.01-4.12-.06c-1.07-.05-1.79-.22-2.43-.46a4.9 4.9 0 0 1-1.76-1.15 4.9 4.9 0 0 1-1.12-1.69c-.24-.62-.41-1.36-.46-2.43C2 15.06 2 14.72 2 12s.01-3.06.06-4.12c.05-1.07.22-1.79.46-2.43.26-.66.6-1.21 1.15-1.76.49-.5 1-.85 1.69-1.12.62-.24 1.36-.41 2.43-.46C8.94 2 9.28 2 12 2Zm0 4.32a5.68 5.68 0 1 0 0 11.36 5.68 5.68 0 0 0 0-11.36Zm0 9.37a3.69 3.69 0 1 1 0-7.38 3.69 3.69 0 0 1 0 7.38Zm5.9-9.6a1.33 1.33 0 1 1-2.66 0 1.33 1.33 0 0 1 2.66 0Z"/></svg>
+        </a>
+        <a href="https://github.com/Bill270606/iot-env-monitor" target="_blank" rel="noopener" aria-label="GitHub repository">
+          <svg viewBox="0 0 24 24"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55v-2.17c-3.2.7-3.87-1.36-3.87-1.36-.53-1.33-1.29-1.69-1.29-1.69-1.05-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.29 1.2-3.1-.12-.29-.52-1.46.11-3.05 0 0 .98-.31 3.2 1.18a11.1 11.1 0 0 1 5.83 0c2.22-1.49 3.2-1.18 3.2-1.18.63 1.59.23 2.76.11 3.05.75.81 1.2 1.84 1.2 3.1 0 4.43-2.69 5.41-5.25 5.69.42.36.78 1.07.78 2.17v3.22c0 .3.21.66.79.55C20.21 21.38 23.5 17.07 23.5 12 23.5 5.73 18.27.5 12 .5Z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="fmuted">© 2026 EnvMonitor</p>
+  </div>
 </footer>
 
 <script>
@@ -242,16 +438,39 @@ const obs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting
 document.querySelectorAll('.fi-in').forEach(el => obs.observe(el));
 
 // Live preview
+let firstLoad = true;
+function animateNum(el, target, suffix, decimals) {
+  target = Number(target) || 0;
+  const start = performance.now(), duration = 900;
+  function frame(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = (target * eased).toFixed(decimals) + suffix;
+    if(t < 1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
 async function up() {
   try {
     const d = await (await fetch('/data/latest')).json();
-    document.getElementById('p-temp').textContent  = d.temperature + '°C';
-    document.getElementById('p-hum').textContent   = d.humidity + '%';
-    document.getElementById('p-lux').textContent   = d.lux + ' lux';
-    document.getElementById('p-soil').textContent  = d.soilAO + ' raw';
-    document.getElementById('p-uv').textContent    = d.uvVoltage + ' V';
-    document.getElementById('p-rain').textContent  = d.rainAO + ' raw';
-    document.getElementById('p-ts').textContent    = d.timestamp;
+    if(firstLoad) {
+      firstLoad = false;
+      animateNum(document.getElementById('p-temp'), d.temperature, '°C', 1);
+      animateNum(document.getElementById('p-hum'),  d.humidity,    '%', 1);
+      animateNum(document.getElementById('p-lux'),  d.lux,         ' lux', 0);
+      animateNum(document.getElementById('p-soil'), d.soilAO,      ' raw', 0);
+      animateNum(document.getElementById('p-uv'),   d.uvVoltage,   ' V', 2);
+      animateNum(document.getElementById('p-rain'), d.rainAO,      ' raw', 0);
+    } else {
+      document.getElementById('p-temp').textContent  = d.temperature + '°C';
+      document.getElementById('p-hum').textContent   = d.humidity + '%';
+      document.getElementById('p-lux').textContent   = d.lux + ' lux';
+      document.getElementById('p-soil').textContent  = d.soilAO + ' raw';
+      document.getElementById('p-uv').textContent    = d.uvVoltage + ' V';
+      document.getElementById('p-rain').textContent  = d.rainAO + ' raw';
+    }
+    document.getElementById('p-ts').textContent = d.timestamp;
   } catch(e) {}
 }
 up(); setInterval(up, 2000);
