@@ -26,7 +26,7 @@ DHT dht(DHTPIN, DHTTYPE);
 BH1750 lightMeter;
 
 const char* ssid = "Just T4n";
-const char* password = "12348765";
+const char* password = ""; // leave empty for an open WiFi network (no password)
 String apiKey = "4OUEBMRNTW46AP5J";
 
 String serverName = "http://api.thingspeak.com/update";
@@ -45,8 +45,10 @@ typedef struct {
 
 SensorData sensorData;
 
-unsigned long previousMillis = 0;
-const long postInterval = 15500; // ThingSpeak free tier allows 1 update / 15s
+unsigned long previousDashboardMillis = 0;
+unsigned long previousThingSpeakMillis = 0;
+const long dashboardInterval = 3000;   // dashboard can refresh fast
+const long thingSpeakInterval = 15500; // ThingSpeak free tier allows 1 update / 15s
 
 void readSensors() {
   sensorData.humidity = dht.readHumidity();
@@ -132,16 +134,21 @@ void setup() {
 }
 
 void loop() {
-  if ((millis() - previousMillis) > postInterval) {
+  unsigned long now = millis();
+
+  if (now - previousDashboardMillis > dashboardInterval) {
+    previousDashboardMillis = now;
     readSensors();
 
     if (isnan(sensorData.temperature) || isnan(sensorData.humidity)) {
       Serial.println("DHT read error, skipping this cycle.");
     } else if (WiFi.status() == WL_CONNECTED) {
-      postToThingSpeak();
       postToDashboard();
-    }
 
-    previousMillis = millis();
+      if (now - previousThingSpeakMillis > thingSpeakInterval) {
+        previousThingSpeakMillis = now;
+        postToThingSpeak();
+      }
+    }
   }
 }
